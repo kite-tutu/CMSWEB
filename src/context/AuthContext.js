@@ -95,7 +95,7 @@ const AuthProvider = ({ children }) => {
     const subdomain = getSubdomain(params.url)
     console.log(process.env.NEXT_PROTOCOL)
     console.log("subdomain",subdomain)
-    if (subdomain) {
+    if (subdomain && subdomain !== 'campcloudpro') {
       console.log("subdomain",params)
       axios
         .post(
@@ -119,7 +119,7 @@ const AuthProvider = ({ children }) => {
       console.log("super admin",params)
       axios
         .post(authConfig.superAdminLogin, params)
-        .then(async response => {    
+        .then(async response => {
           console.log("response",response)
           if(response.data != "Super Admin access only")
           {
@@ -131,12 +131,12 @@ const AuthProvider = ({ children }) => {
             params.rememberMe ? window.localStorage.setItem('userData', JSON.stringify(response.data.userData)) : null
             const redirectURL = returnUrl && returnUrl !== '/' ? returnUrl : '/'
             router.replace(redirectURL)
-          }   
+          }
           else
           {
             console.log("error",response)
             errorCallback(err)
-          }       
+          }
         })
         .catch(err => {
           if (errorCallback) errorCallback(err)
