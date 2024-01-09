@@ -52,6 +52,11 @@ import Fab from '@mui/material/Fab'
 import CardContent from '@mui/material/CardContent'
 import CardHeader from '@mui/material/CardHeader'
 import CustomAvatar from 'src/@core/components/mui/avatar'
+import Stack from '@mui/material/Stack'
+import Autocomplete from '@mui/material/Autocomplete'
+import CustomTextField from 'src/@core/components/mui/text-field'
+import TextField from '@mui/material/TextField'
+import InputAdornment from '@mui/material/InputAdornment'
 import { getcamplist } from '../../../api'
 
 const StyledList = styled(List)(({ theme }) => ({
@@ -85,53 +90,15 @@ const Illustration = styled('img')(({ theme }) => ({
   }
 }))
 
-const data = [
-  {
-    stats: '230k',
-    title: 'Sales',
-    color: 'primary',
-    icon: 'tabler:chart-pie-2'
-  },
-  {
-    color: 'info',
-    stats: '8.549k',
-    title: 'Customers',
-    icon: 'tabler:users'
-  },
-  {
-    color: 'error',
-    stats: '1.423k',
-    title: 'Products',
-    icon: 'tabler:shopping-cart'
-  },
-  {
-    stats: '$9745',
-    color: 'success',
-    title: 'Revenue',
-    icon: 'tabler:currency-dollar'
-  }
-]
 
-const renderStats = () => {
-  return data.map((sale, index) => (
-    <Grid item xs={6} md={3} key={index}>
-      <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-        <CustomAvatar skin='light' color={sale.color} sx={{ mr: 4, width: 42, height: 42 }}>
-          <Icon icon={sale.icon} fontSize='1.5rem' />
-        </CustomAvatar>
-        <Box sx={{ display: 'flex', flexDirection: 'column' }}>
-          <Typography variant='h5'>{sale.stats}</Typography>
-          <Typography variant='body2'>{sale.title}</Typography>
-        </Box>
-      </Box>
-    </Grid>
-  ))
-}
+
+const top100Films = [{ title: 'Camp 1' }, { title: 'Camp 2' }, { title: 'Camp 3' }, { title: 'Camp 4' }]
 
 const AdminDashboard = () => {
   const [progress, setProgress] = useState(0)
   const [campList, setcampList] = useState([])
   const [campSingle, setcampSingle] = useState({})
+  const [campValue, setcampValue] = useState()
 
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null)
@@ -172,57 +139,14 @@ const AdminDashboard = () => {
       .catch(error => {
         console.error('Error fetching data:', error)
       })
-    // fetch('http://localhost:8000/get_all_camp', {
-    //   method: 'GET'
-    //   // headers: {
-    //   //   "X-RapidAPI-Key": "your-api-key",
-    //   //   "X-RapidAPI-Host": "jokes-by-api-ninjas.p.rapidapi.com",
-    //   // },
-    // })
-    //   .then(response => response.json())
-    //   .then(data => {
-    //     setcampList(data)
-    //   })
-    //   .catch(error => console.log(error))
+    
   }, [])
 
   useEffect(() => {
-    //console.log('single camp', campSingle)
-  })
+    console.log("Camp Value", campValue)
+  },[campValue])
 
-  // async function GetCampList(){
-  //   // const API_url = "https://localhost:7061/api/GetPointSummary";
-  //   // const myHeaders = new Headers()
-  //   // myHeaders.append('Content-Type', 'application/json')
-
-  //   // // myHeaders.append('Authorization', 'Bearer ' + localStorage.getItem('token'))
-
-  //   // const params = new URLSearchParams([['UserAccountId', 107]]);
-  //   // const res = await axios.get(API_url, { params })
-  //   // const data = await res.data
-
-  //   console.log("3rd data fetching start")
-  //   const response = await fetch("http://localhost:8000/get_all_camp");
-  //   const res = await response.json();
-  //   if (res.status == 200) {
-  //    // setSummaryPoint(data);
-  //     console.log("3rd ", res);
-
-  //     // setWeekData(Object.values(data).map((row, index) => ({
-  //     //   id: row.Id, // You can use a different logic for generating unique IDs if needed
-  //     //   ...row
-  //     // }))
-  //     //)
-  //     // setProgramName(data.sessionname)
-  //     // setWeekName(data.WeekName)
-  //     // console.log("Name", ProgramName);
-  //     //setSessionid(data.SessionId)
-  //     //console.log("active session Id", Sessionid,data.SessionId)
-  //     return { ok: true, res }
-  //   } else {
-  //     return { ok: false, err: res, res }
-  //   }
-  // }
+ 
   const handleClick = event => {
     setAnchorEl(event.currentTarget)
   }
@@ -230,6 +154,16 @@ const AdminDashboard = () => {
   const handleClose2 = () => {
     setAnchorEl(null)
   }
+
+  const changeHandler = value => {
+    console.log(value); // value should be here
+}
+function handleInputChange(event, value) {
+  console.log("function", value);
+  //console.log("function", event);
+}
+
+
 
   return (
     <ApexChartWrapper>
@@ -335,6 +269,51 @@ const AdminDashboard = () => {
 
           <Grid item xs={12} md={12}>
             <StyledList disablePadding>
+            <Card style={{ padding: '10px' }}>
+                <Grid container spacing={6}>
+                  <Grid item xs={6} md={9}>
+                    <Stack spacing={2} sx={{ width: '100%' }}>
+                      <Autocomplete
+                        freeSolo
+                        id='free-solo-2-demo'                        
+                        options={campList.map(option => option.camp_name)}  
+                        onInputChange={handleInputChange}                     
+                        // onChange={(event, newValue) => {
+                        //   setcampValue(newValue);
+                        // }}
+                        renderInput={params => (
+                          <TextField
+                            {...params}
+                            label='Camp Search'
+                            onChange={e=>changeHandler(e.target.value)}
+                            InputProps={{
+                              ...params.InputProps,
+                              type: 'search',
+                              startAdornment: (
+                                <InputAdornment position='start'>
+                                  <Icon icon='gala:search' fontSize='1.5rem' />
+                                </InputAdornment>
+                              )
+                            }}
+                          />
+                        )}
+                      />
+                    </Stack>
+                  </Grid>
+
+                  <Grid item xs={6} md={3}>
+                    <Button
+                      variant='contained'
+                      startIcon={<Icon icon='tabler:plus' />}
+                      size='medium'
+                     
+                      sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%' }}
+                    >
+                      Add New Camp
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Card>
               {campList.map(camp => {
                 return (
                   <div key={camp.id}>
