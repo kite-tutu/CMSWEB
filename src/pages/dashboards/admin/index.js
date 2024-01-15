@@ -99,15 +99,17 @@ const AdminDashboard = () => {
   const [campList, setcampList] = useState([])
   const [campSingle, setcampSingle] = useState({})
   const [campValue, setcampValue] = useState()
+  const [campListAll, setcampListAll] = useState([])
 
   const [open, setOpen] = useState(false)
   const [anchorEl, setAnchorEl] = useState(null)
+  const [DialogOpen, setDialogOpen] = useState(false)
 
   // ** Hooks
   const theme = useTheme()
-  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))
-  const handleClickOpen = () => setOpen(true)
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))  
   const handleClose = () => setOpen(false)
+
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -134,6 +136,7 @@ const AdminDashboard = () => {
       .then(response => {
         console.log(response)
         setcampList(response.data)
+        setcampListAll(response.data)
         setcampSingle(response.data[0])
       })
       .catch(error => {
@@ -144,6 +147,7 @@ const AdminDashboard = () => {
 
   useEffect(() => {
     console.log("Camp Value", campValue)
+    console.log("camp list All", campListAll)
   },[campValue])
 
  
@@ -155,11 +159,15 @@ const AdminDashboard = () => {
     setAnchorEl(null)
   }
 
-  const changeHandler = value => {
-    console.log(value); // value should be here
-}
-function handleInputChange(event, value) {
-  console.log("function", value);
+const handleClickOpen = () => setDialogOpen(true)
+  
+function handleInputChange(event, value) {   
+  const filteredList = campListAll.filter(item =>
+    item.camp_name.toLowerCase().includes(value.toLowerCase())
+  );
+  setcampList(filteredList);
+  console.log("campListAll ", value,campListAll);
+  console.log("filteredList", value,filteredList);
   //console.log("function", event);
 }
 
@@ -169,22 +177,7 @@ function handleInputChange(event, value) {
     <ApexChartWrapper>
       <KeenSliderWrapper>
         <Grid container spacing={6}>
-          {/* <Grid item xs={12} lg={6}>
-            <AnalyticsWebsiteAnalyticsSlider />
-          </Grid>
-          <Grid item xs={12} sm={6} lg={3}>
-            <AnalyticsOrderVisits />
-          </Grid>
-          <Grid item xs={12} sm={6} lg={3}>
-            <CardStatsWithAreaChart
-              stats='97.5k'
-              chartColor='success'
-              avatarColor='success'
-              title='Revenue Generated'
-              avatarIcon='tabler:credit-card'
-              chartSeries={[{ data: [6, 35, 25, 61, 32, 84, 70] }]}
-            />
-          </Grid> */}
+         
           <Grid item xs={12} md={4}>
             {/* <EcommerceCongratulationsJohn /> */}
             <Card sx={{ position: 'relative' }}>
@@ -276,7 +269,7 @@ function handleInputChange(event, value) {
                       <Autocomplete
                         freeSolo
                         id='free-solo-2-demo'                        
-                        options={campList.map(option => option.camp_name)}  
+                        options={campListAll.map(option => option.camp_name)}  
                         onInputChange={handleInputChange}                     
                         // onChange={(event, newValue) => {
                         //   setcampValue(newValue);
@@ -284,8 +277,7 @@ function handleInputChange(event, value) {
                         renderInput={params => (
                           <TextField
                             {...params}
-                            label='Camp Search'
-                            onChange={e=>changeHandler(e.target.value)}
+                            label='Camp Search'                            
                             InputProps={{
                               ...params.InputProps,
                               type: 'search',
@@ -306,7 +298,7 @@ function handleInputChange(event, value) {
                       variant='contained'
                       startIcon={<Icon icon='tabler:plus' />}
                       size='medium'
-                     
+                      onClick={handleClickOpen}
                       sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: '100%' }}
                     >
                       Add New Camp
@@ -496,18 +488,98 @@ function handleInputChange(event, value) {
               })}
             </StyledList>
           </Grid>
-          <Dialog fullScreen={fullScreen} open={open} onClose={handleClose} aria-labelledby='responsive-dialog-title'>
-            <DialogTitle id='responsive-dialog-title'>Use Google's location service?</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                Let Google help apps determine location. This means sending anonymous location data to Google, even when
-                no apps are running.
-              </DialogContentText>
-            </DialogContent>
-            <DialogActions className='dialog-actions-dense'>
-              <Button onClick={handleClose}>Disagree</Button>
-              <Button onClick={handleClose}>Agree</Button>
-            </DialogActions>
+          <Dialog fullScreen={fullScreen} open={DialogOpen} onClose={handleClose} aria-labelledby='responsive-dialog-title'>
+            <Card>
+              <CardHeader title='Add New Camp' startIcon={<Icon icon='tabler:plus' />} />
+              <Divider sx={{ m: '0 !important' }} />
+              <form onSubmit={e => e.preventDefault()}>
+                <CardContent>
+                  <Grid container spacing={5}>
+                    <Grid item xs={12} sm={6}>
+                      <CustomTextField fullWidth label='Camp Name' placeholder='Camp Name' />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <CustomTextField fullWidth label='Domain for Camp' placeholder='Domain for Camp' />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <CustomTextField fullWidth label='Camp Admin Name' placeholder='Camp Admin Name' />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <CustomTextField fullWidth type='email' label='Camp Admin Email' placeholder='admin@gmail.com' />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <CustomTextField
+                        fullWidth
+                        label='Password'
+                        value={values.password}
+                        id='form-layouts-separator-password'
+                        onChange={handlePasswordChange('password')}
+                        type={values.showPassword ? 'text' : 'password'}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position='end'>
+                              <IconButton
+                                edge='end'
+                                onClick={handleClickShowPassword}
+                                onMouseDown={e => e.preventDefault()}
+                                aria-label='toggle password visibility'
+                              >
+                                <Icon fontSize='1.25rem' icon={values.showPassword ? 'tabler:eye' : 'tabler:eye-off'} />
+                              </IconButton>
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={6}>
+                      <CustomTextField
+                        fullWidth
+                        value={values.password2}
+                        label='Confirm Password'
+                        id='form-layouts-separator-password-2'
+                        onChange={handleConfirmChange('password2')}
+                        type={values.showPassword2 ? 'text' : 'password'}
+                        InputProps={{
+                          endAdornment: (
+                            <InputAdornment position='end'>
+                              <IconButton
+                                edge='end'
+                                onMouseDown={e => e.preventDefault()}
+                                aria-label='toggle password visibility'
+                                onClick={handleClickShowConfirmPassword}
+                              >
+                                <Icon
+                                  fontSize='1.25rem'
+                                  icon={values.showPassword2 ? 'tabler:eye' : 'tabler:eye-off'}
+                                />
+                              </IconButton>
+                            </InputAdornment>
+                          )
+                        }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} sm={12}>
+                      <FormControlLabel
+                        label='I agree to privacy policy & terms'
+                        control={<Checkbox name='basic-checked' required />}
+                        sx={{ width: '100%' }}
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <Divider sx={{ mb: '0 !important' }} />
+                    </Grid>
+                  </Grid>
+                </CardContent>
+                <CardActions>
+                  <Button type='submit' sx={{ mr: 2 }} variant='contained'>
+                    Submit
+                  </Button>
+                  <Button type='reset' color='secondary' variant='tonal'>
+                    Reset
+                  </Button>
+                </CardActions>
+              </form>
+            </Card>
           </Dialog>
         </Grid>
       </KeenSliderWrapper>
