@@ -55,8 +55,11 @@ import CustomAvatar from 'src/@core/components/mui/avatar'
 import Stack from '@mui/material/Stack'
 import Autocomplete from '@mui/material/Autocomplete'
 import CustomTextField from 'src/@core/components/mui/text-field'
+import Divider from '@mui/material/Divider'
 import TextField from '@mui/material/TextField'
 import InputAdornment from '@mui/material/InputAdornment'
+import Checkbox from '@mui/material/Checkbox'
+import CardActions from '@mui/material/CardActions'
 import { getcamplist } from '../../../api'
 
 const StyledList = styled(List)(({ theme }) => ({
@@ -109,7 +112,33 @@ const AdminDashboard = () => {
   const theme = useTheme()
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'))  
   const handleClose = () => setOpen(false)
+  const [values, setValues] = useState({
+    password: '',
+    password2: '',
+    showPassword: false,
+    showPassword2: false
+  })
+// Handle Password
+const handlePasswordChange = prop => event => {
+  setValues({ ...values, [prop]: event.target.value })
+  console.log("handlePasswordChange", values)
+}
 
+const handleClickShowPassword = () => {
+  setValues({ ...values, showPassword: !values.showPassword })
+  console.log("handleClickShowPassword", values)
+}
+
+// Handle Confirm Password
+const handleConfirmChange = prop => event => {
+  setValues({ ...values, [prop]: event.target.value })
+  console.log("handleConfirmChange", values)
+}
+
+const handleClickShowConfirmPassword = () => {
+  setValues({ ...values, showPassword2: !values.showPassword2 })
+  console.log("handleClickShowConfirmPassword", values)
+}
 
   useEffect(() => {
     const timer = setInterval(() => {
